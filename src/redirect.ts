@@ -24,6 +24,7 @@ export class Redirect {
     }
 
     private initEvent(event: any, callback: any) {
+        console.log('event:', event);
         const cf = event.Records[0].cf;
         this.request = cf.request;
         this.callback = callback;
@@ -35,6 +36,7 @@ export class Redirect {
 
         try {
             const redirectRules = await Utils.s3Read(this.bucketName, this.bucketKey); //await this.readConfig();
+            console.log('redirect rules:', redirectRules);
             const newUri = redirectRules[this.requestUri];
 
             console.log('URI requested:', this.requestUri);
