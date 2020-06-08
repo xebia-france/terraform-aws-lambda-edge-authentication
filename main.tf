@@ -1,19 +1,7 @@
-//resource "template_file" "this" {
-//  template = file("${path.module}/src/params.json")
-//
-//  vars = {
-//    BUCKET_NAME   = var.bucketName
-//    BUCKET_KEY    = var.bucketKey
-//    COOKIE_DOMAIN = var.cookieDomain
-//  }
-//}
-
 resource "local_file" "params" {
-//  content  = template_file.this.rendered
   content = templatefile("${path.module}/src/params.json", {
         BUCKET_NAME   = var.bucketName
         BUCKET_KEY    = var.bucketKey
-        COOKIE_DOMAIN = var.cookieDomain
   })
 
   filename = "${path.module}/.archive/params.json"
@@ -40,9 +28,9 @@ data "archive_file" "this" {
 }
 
 resource "aws_lambda_function" "this" {
-  description = "Basic HTTP authentication module/function"
+  description = "Redirect HTTP module/function"
   role        = aws_iam_role.this.arn
-  runtime     = "nodejs10.x"
+  runtime     = "nodejs12.x"
 
   filename         = data.archive_file.this.output_path
   source_code_hash = data.archive_file.this.output_base64sha256

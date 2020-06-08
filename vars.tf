@@ -1,5 +1,5 @@
 variable "name" {
-  default = "terraform-aws-lambda-edge-authentication"
+  default = "terraform-aws-lambda-edge-redirection"
 }
 
 // Lambda limits https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html
@@ -13,9 +13,6 @@ variable "fn_memory_size" {
 
 #lambda config bucket
 variable "bucketName" {
-}
-
-variable "cookieDomain" {
 }
 
 #lambda config key

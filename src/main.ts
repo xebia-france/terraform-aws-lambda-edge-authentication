@@ -1,6 +1,6 @@
-import {BasicAuth} from './basic_auth';
+import {Redirect} from './redirect';
 
 exports.handler = async (event, context, callback) => {
-    const auth = new BasicAuth();
-    return auth.handler(event, context, callback);
+    const redirection = new Redirect();
+    return redirection.handler(event, context, callback);
 };
