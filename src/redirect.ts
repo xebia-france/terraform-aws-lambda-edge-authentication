@@ -24,8 +24,8 @@ export class Redirect {
     }
 
     private initEvent(event: any, callback: any) {
-        console.log('event:', event);
         const cf = event.Records[0].cf;
+        console.log('cf:', cf);
         this.request = cf.request;
         this.callback = callback;
         this.requestUri = this.request.uri;
