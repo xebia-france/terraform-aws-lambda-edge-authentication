@@ -38,8 +38,7 @@ export class Redirect {
             const newUri = redirectRules[this.requestUri];
 
             console.log('URI requested:', this.requestUri);
-
-            if ( newUri !== 'undefined'){
+            if ( typeof newUri !== 'undefined'){
                 return this.sendRedirection(newUri);
             };
 
