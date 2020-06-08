@@ -53,7 +53,8 @@ export class Redirect {
                         }]
                     }
                 };
-            }
+            };
+
             return this.redirect();
         }
         catch (e) {
