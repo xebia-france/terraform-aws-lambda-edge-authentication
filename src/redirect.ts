@@ -39,7 +39,10 @@ export class Redirect {
             const redirectRules = await Utils.s3Read(this.bucketName, this.bucketKey); //await this.readConfig();
             const redirectUri = redirectRules[this.requestUri];
 
+            console.log('URI requested', this.requestUri);
+
             if ( redirectUri !== 'undefined'){
+                console.log('redirection send', redirectUri);
                 this.response = {
                     status: '301',
                     statusDescription: 'Found',
@@ -52,9 +55,6 @@ export class Redirect {
                 };
             }
             return this.redirect();
-
-            console.log('current uri= ' + this.requestUri + ' is protected');
-
         }
         catch (e) {
             console.error(e);
