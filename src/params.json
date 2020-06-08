@@ -1,0 +1,4 @@
+{
+  "bucketName": "${BUCKET_NAME}",
+  "bucketKey": "${BUCKET_KEY}"
+}
