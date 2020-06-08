@@ -26,8 +26,6 @@ export class Redirect {
     private initEvent(event: any, callback: any) {
         const cf = event.Records[0].cf;
         this.request = cf.request;
-        this.response = cf.response;
-        this.eventType = cf.config.eventType;
         this.callback = callback;
         this.requestUri = this.request.uri;
     }
@@ -37,25 +35,15 @@ export class Redirect {
 
         try {
             const redirectRules = await Utils.s3Read(this.bucketName, this.bucketKey); //await this.readConfig();
-            const redirectUri = redirectRules[this.requestUri];
+            const newUri = redirectRules[this.requestUri];
 
-            console.log('URI requested', this.requestUri);
+            console.log('URI requested:', this.requestUri);
 
-            if ( redirectUri !== 'undefined'){
-                console.log('redirection send', redirectUri);
-                this.response = {
-                    status: '301',
-                    statusDescription: 'Found',
-                    headers: {
-                        location: [{
-                            key: 'Location',
-                            value: redirectUri,
-                        }]
-                    }
-                };
+            if ( newUri !== 'undefined'){
+                return this.sendRedirection(newUri);
             };
 
-            return this.redirect();
+            return this.callback(null, this.request);
         }
         catch (e) {
             console.error(e);
@@ -63,9 +51,19 @@ export class Redirect {
         }
     }
 
-    private redirect() {
-        const reply = this.isResponse ? this.response : this.request;
-        return this.callback(null, reply);
+    private sendRedirection(newUri) {
+        console.log('redirection send:', newUri);
+        const response = {
+            status: '301',
+            statusDescription: 'Found',
+            headers: {
+                location: [{
+                    key: 'Location',
+                    value: newUri,
+                }]
+            }
+        };
+        return this.callback(null, response)
     }
 
     private internalError() {
@@ -76,9 +74,5 @@ export class Redirect {
             body: body
         };
         return this.callback(null, response);
-    }
-
-    get isResponse(): boolean {
-        return this.eventType.endsWith('response');
     }
 }
