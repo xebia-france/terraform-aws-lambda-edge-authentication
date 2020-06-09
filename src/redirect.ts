@@ -25,8 +25,9 @@ export class Redirect {
 
     private initEvent(event: any, callback: any) {
         const cf = event.Records[0].cf;
-        console.log('cf:', cf);
+        console.log(JSON.stringify(cf, null, 4));
         this.request = cf.request;
+        this.response = cf.response;
         this.callback = callback;
         this.requestUri = this.request.uri;
     }
@@ -35,18 +36,26 @@ export class Redirect {
         this.initEvent(event, callback);
 
         try {
-            const redirectRules = await Utils.s3Read(this.bucketName, this.bucketKey); //await this.readConfig();
-            console.log('redirect rules:', redirectRules);
-            const newUri = redirectRules[this.requestUri];
+            const jsonFile = await Utils.s3Read(this.bucketName, this.bucketKey); //await this.readConfig();
+            const redirectRules = JSON.parse(jsonFile);
+            let currentUri = this.requestUri;
+            console.log('URI requested:', currentUri);
 
-            console.log('URI requested:', this.requestUri);
+            // Cut off trailing slash to normalize it
+            if (currentUri.slice(-1) === '/') {
+                currentUri = currentUri.slice(0, -1);
+                console.log('Cut off URI trailing slash:', currentUri);
+            };
 
-            // Redirection
+            // Compare URI with JSON key
+            const newUri = redirectRules[currentUri];
+            console.log('result from JSON:', newUri);
             if ( typeof newUri !== 'undefined'){
                 return this.sendRedirection(newUri);
             };
 
-            return this.callback(null, this.request);
+            // Return response if no need to redirect
+            return this.callback(null, this.response);
         }
         catch (e) {
             console.error(e);
@@ -55,18 +64,19 @@ export class Redirect {
     }
 
     private sendRedirection(newUri) {
-        console.log('redirection send:', newUri);
+        console.log('URI returned:', newUri);
         const response = {
             status: '301',
             statusDescription: 'Found',
             headers: {
                 location: [{
                     key: 'Location',
-                    value: newUri,
+                    value: newUri
                 }]
             }
         };
-        return this.callback(null, response)
+        console.log('response:', response);
+        return this.callback(null, response);
     }
 
     private internalError() {
