@@ -51,7 +51,7 @@ export class Redirect {
             const newUri = redirectRules[currentUri];
             console.log('result from JSON:', newUri);
             if ( typeof newUri !== 'undefined'){
-                return this.sendRedirection(newUri);
+                return this.callback(null, this.sendRedirection(newUri));
             };
 
             // Return response if no need to redirect
@@ -65,26 +65,21 @@ export class Redirect {
 
     private sendRedirection(newUri) {
         console.log('URI returned:', newUri);
-        const response = {
+        this.response.headers['location'] = [{
+            key: 'Location',
+            value: newUri,
+        }];
+        return {
             status: '301',
             statusDescription: 'Found',
-            headers: {
-                location: [{
-                    key: 'Location',
-                    value: newUri
-                }]
-            }
+            headers: this.response.headers
         };
-        console.log('response:', response);
-        return this.callback(null, response);
     }
 
     private internalError() {
-        const body = 'Internal Error. Check Log for more details.';
         const response = {
             status: '500',
-            statusDescription: 'Internal Error',
-            body: body
+            statusDescription: 'Internal Error'
         };
         return this.callback(null, response);
     }
